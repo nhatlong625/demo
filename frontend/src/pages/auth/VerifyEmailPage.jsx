@@ -1,50 +1,46 @@
-import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import logoImg from '../../assets/images/logo.png';
+import authService from '../../services/authService';
 
 function VerifyEmailPage() {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const token = searchParams.get('token') || '';
   const email = searchParams.get('email') || '';
 
-  const [code, setCode] = useState(['', '', '', '', '', '']);
-  const [codeError, setCodeError] = useState('');
+  const [status, setStatus] = useState('idle'); // idle | loading | success | error
+  const [message, setMessage] = useState('');
+  const [manualToken, setManualToken] = useState(token);
 
-  const handleCodeChange = (value, index) => {
-    if (value !== '' && isNaN(value)) return;
-    
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-
-    // Auto focus next input
-    if (value !== '' && index < 5) {
-      const nextInput = document.getElementById(`code-${index + 1}`);
-      if (nextInput) nextInput.focus();
+  // Auto-verify if token is in URL
+  useEffect(() => {
+    if (token) {
+      verifyToken(token);
     }
-  };
+  }, [token]);
 
-  const handleCodeKeyDown = (e, index) => {
-    // Backspace on empty field moves focus backward
-    if (e.key === 'Backspace' && code[index] === '' && index > 0) {
-      const prevInput = document.getElementById(`code-${index - 1}`);
-      if (prevInput) {
-        prevInput.focus();
-      }
-    }
-  };
-
-  const handleVerifyCode = (e) => {
-    e.preventDefault();
-    const verificationCode = code.join('');
-    if (verificationCode.length < 6) {
-      setCodeError('Please enter the full 6-digit code');
+  const verifyToken = async (tokenValue) => {
+    if (!tokenValue) {
+      setStatus('idle');
+      setMessage('');
       return;
     }
-    setCodeError('');
-    
-    // Successfully verified -> Navigate back to forgot password to reset password
-    navigate(`/forgot-password?step=reset&email=${encodeURIComponent(email)}`);
+
+    setStatus('loading');
+    setMessage('Verifying...');
+    try {
+      const data = await authService.verifyEmail(tokenValue);
+      setStatus('success');
+      setMessage(data.message || 'Email verified successfully! You can now login.');
+    } catch (err) {
+      setStatus('error');
+      setMessage(err.response?.data?.message || 'Verification failed. The link may be invalid or expired.');
+    }
+  };
+
+  const handleManualVerify = (e) => {
+    e.preventDefault();
+    verifyToken(manualToken);
   };
 
   return (
@@ -73,57 +69,101 @@ function VerifyEmailPage() {
           <span className="login-modal-secure-label" style={{ letterSpacing: '0.08em' }}>IDENTITY VERIFICATION</span>
           <h2 className="login-modal-title" style={{ fontSize: '1.65rem' }}>Verify your email</h2>
           <p className="login-modal-subtitle" style={{ fontSize: '0.88rem', padding: '0 10px', lineHeight: '1.5' }}>
-            We've sent a 6-digit code to <br />
-            <strong style={{ color: 'var(--color-text)' }}>{email || 'alex@example.com'}</strong>
+            {email ? (
+              <>We've sent a verification link to<br /><strong style={{ color: 'var(--color-text)' }}>{email}</strong></>
+            ) : (
+              'Enter the token from your verification email below.'
+            )}
           </p>
         </div>
 
-        {/* 6-Digit input boxes */}
-        <form className="login-modal-form" onSubmit={handleVerifyCode}>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', margin: '8px 0' }}>
-            {code.map((digit, idx) => (
-              <input
-                key={idx}
-                type="text"
-                maxLength={1}
-                value={digit}
-                onChange={(e) => handleCodeChange(e.target.value, idx)}
-                onKeyDown={(e) => handleCodeKeyDown(e, idx)}
-                id={`code-${idx}`}
-                className="login-modal-input"
-                style={{ width: '48px', height: '54px', textAlign: 'center', fontSize: '1.25rem', fontWeight: 'bold', padding: 0 }}
-                autoComplete="one-time-code"
-              />
-            ))}
+        {/* Status display */}
+        {status === 'loading' && (
+          <div style={{
+            background: 'rgba(79, 70, 229, 0.1)',
+            border: '1px solid rgba(79, 70, 229, 0.3)',
+            color: 'var(--color-primary)',
+            padding: '14px 16px',
+            borderRadius: '8px',
+            fontSize: '0.88rem',
+            textAlign: 'center',
+            marginBottom: '16px',
+          }}>
+            {message}
           </div>
-          {codeError && (
-            <p style={{ color: 'var(--color-error)', fontSize: '0.8rem', textAlign: 'center', margin: '-4px 0 4px' }}>
-              {codeError}
-            </p>
-          )}
+        )}
 
-          <button type="submit" className="login-modal-submit" style={{ marginTop: '8px' }}>
-            Verify Code
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"/>
-              <polyline points="12 5 19 12 12 19"/>
-            </svg>
-          </button>
-        </form>
+        {status === 'success' && (
+          <div style={{
+            background: 'rgba(34, 197, 94, 0.1)',
+            border: '1px solid rgba(34, 197, 94, 0.3)',
+            color: '#16a34a',
+            padding: '14px 16px',
+            borderRadius: '8px',
+            fontSize: '0.88rem',
+            textAlign: 'center',
+            marginBottom: '16px',
+          }}>
+            {message}
+            <div style={{ marginTop: '12px' }}>
+              <Link
+                to="/login"
+                style={{
+                  display: 'inline-block',
+                  background: 'var(--color-primary)',
+                  color: 'white',
+                  padding: '10px 28px',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontWeight: 600,
+                }}
+              >
+                Go to Login
+              </Link>
+            </div>
+          </div>
+        )}
 
-        {/* Didn't receive code footer */}
-        <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--color-text-soft)', marginTop: '20px', marginBottom: 0 }}>
-          Didn't receive the code?{' '}
-          <button
-            type="button"
-            style={{ background: 'none', border: 'none', padding: 0, color: 'var(--color-primary)', fontWeight: 700, cursor: 'pointer' }}
-            onClick={() => alert('Verification code resent!')}
-          >
-            Resend
-          </button>
-        </p>
+        {status === 'error' && (
+          <div style={{
+            background: 'rgba(239, 68, 68, 0.1)',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            color: 'var(--color-error)',
+            padding: '14px 16px',
+            borderRadius: '8px',
+            fontSize: '0.85rem',
+            textAlign: 'center',
+            marginBottom: '16px',
+          }}>
+            {message}
+          </div>
+        )}
 
-        {/* Back to Login Link */}
+        {/* Manual token input (fallback) */}
+        {(status === 'idle' || status === 'error') && (
+          <form className="login-modal-form" onSubmit={handleManualVerify}>
+            <div className="login-modal-field">
+              <label className="login-modal-field-label">Verification Token</label>
+              <input
+                type="text"
+                className="login-modal-input"
+                placeholder="Paste your token here"
+                value={manualToken}
+                onChange={(e) => setManualToken(e.target.value)}
+              />
+            </div>
+
+            <button type="submit" className="login-modal-submit" style={{ marginTop: '8px' }}>
+              Verify
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+              </svg>
+            </button>
+          </form>
+        )}
+
+        {/* Back to Login */}
         <Link to="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: 'var(--color-text-soft)', fontWeight: 600, fontSize: '0.88rem', marginTop: '24px' }}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
             <line x1="19" y1="12" x2="5" y2="12"/>
