@@ -1,0 +1,89 @@
+Starting Spring Boot on port 8080 with database AI_StudyHub...
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] --------------------< com.aistudyhub:backend-java >---------------------
+[INFO] Building AI Study Hub Java Backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.3.5:run (default-cli) > test-compile @ backend-java >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ backend-java ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ backend-java ---
+[INFO] Nothing to compile - all classes are up to date.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ backend-java ---
+[INFO] skip non existing resourceDirectory C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\backend-java\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ backend-java ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.3.5:run (default-cli) < test-compile @ backend-java <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.3.5:run (default-cli) @ backend-java ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v3.3.5)
+
+2026-06-17T18:09:22.280+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.aistudyhub.AiStudyHubApplication     : Starting AiStudyHubApplication using Java 26.0.1 with PID 33612 (C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\backend-java\target\classes started by admin in C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\backend-java)
+2026-06-17T18:09:22.283+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.aistudyhub.AiStudyHubApplication     : No active profile set, falling back to 1 default profile: "default"
+WARNING: A restricted method in java.lang.System has been called
+WARNING: java.lang.System::load has been called by org.apache.tomcat.jni.Library in an unnamed module (file:/C:/Users/admin/.m2/repository/org/apache/tomcat/embed/tomcat-embed-core/10.1.31/tomcat-embed-core-10.1.31.jar)
+WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+
+2026-06-17T18:09:23.347+07:00  INFO 33612 --- [ai-study-hub-java] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-06-17T18:09:23.359+07:00  INFO 33612 --- [ai-study-hub-java] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-17T18:09:23.359+07:00  INFO 33612 --- [ai-study-hub-java] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.31]
+2026-06-17T18:09:23.402+07:00  INFO 33612 --- [ai-study-hub-java] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-06-17T18:09:23.403+07:00  INFO 33612 --- [ai-study-hub-java] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1084 ms
+2026-06-17T18:09:23.789+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-17T18:09:24.047+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection ConnectionID:1 ClientConnectionId: a24b9840-7051-43c5-b935-a8ea2ea18a36
+2026-06-17T18:09:24.050+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-17T18:09:24.396+07:00  INFO 33612 --- [ai-study-hub-java] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-06-17T18:09:24.402+07:00  INFO 33612 --- [ai-study-hub-java] [           main] com.aistudyhub.AiStudyHubApplication     : Started AiStudyHubApplication in 2.464 seconds (process running for 2.713)
+2026-06-17T18:09:36.531+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-17T18:09:36.533+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-17T18:09:36.534+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-06-17T18:21:56.291+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-4] com.aistudyhub.service.ChatService       : Deleted chat session 45 for user 20 with title 'SWYT'
+2026-06-17T18:21:58.695+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-6] com.aistudyhub.service.ChatService       : Deleted chat session 44 for user 20 with title 'SWT mean'
+2026-06-17T18:22:01.497+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-3] com.aistudyhub.service.ChatService       : Deleted chat session 43 for user 20 with title 'SWT mean'
+2026-06-17T18:22:04.457+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-7] com.aistudyhub.service.ChatService       : Deleted chat session 42 for user 20 with title 'SWR mean?'
+2026-06-17T19:08:08.468+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-4] com.aistudyhub.service.ChatService       : Deleted chat session 46 for user 20 with title 'SWP là gì'
+2026-06-17T19:08:14.971+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-6] com.aistudyhub.service.ChatService       : Deleted chat session 41 for user 20 with title 'SWR mean?'
+2026-06-17T19:08:17.005+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-2] com.aistudyhub.service.ChatService       : Deleted chat session 40 for user 20 with title 'Introduce SWR'
+2026-06-17T19:08:20.628+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-8] com.aistudyhub.service.ChatService       : Deleted chat session 34 for user 20 with title 'Interview trong SWR là gì?'
+2026-06-17T19:08:23.652+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-5] com.aistudyhub.service.ChatService       : Deleted chat session 28 for user 20 with title 'abc'
+2026-06-17T19:08:26.680+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-7] com.aistudyhub.service.ChatService       : Deleted chat session 20 for user 20 with title 'Recent saved after HTTP 1.1 fix'
+2026-06-17T19:08:30.579+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-8] com.aistudyhub.service.ChatService       : Deleted chat session 39 for user 20 with title 'swt là gì'
+2026-06-17T19:08:34.126+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] com.aistudyhub.service.ChatService       : Deleted chat session 38 for user 20 with title 'What is interview in SWR when Python is down?'
+2026-06-17T19:08:36.259+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-5] com.aistudyhub.service.ChatService       : Deleted chat session 37 for user 20 with title 'What is interview in SWR?'
+2026-06-17T19:08:47.970+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-4] com.aistudyhub.service.ChatService       : Deleted chat session 32 for user 20 with title 'What is interview in SWR?'
+2026-06-17T19:08:51.147+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-2] com.aistudyhub.service.ChatService       : Deleted chat session 36 for user 20 with title 'Introduce SWR'
+2026-06-17T19:08:53.395+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] com.aistudyhub.service.ChatService       : Deleted chat session 30 for user 20 with title 'first question should answer immediately'
+2026-06-17T19:08:56.033+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-5] com.aistudyhub.service.ChatService       : Deleted chat session 21 for user 20 with title 'abc'
+2026-06-17T19:08:58.114+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-4] com.aistudyhub.service.ChatService       : Deleted chat session 22 for user 20 with title 'Recent visible after user resolve fix'
+2026-06-17T19:09:00.340+07:00  INFO 33612 --- [ai-study-hub-java] [io-8080-exec-10] com.aistudyhub.service.ChatService       : Deleted chat session 23 for user 20 with title 'abv'
+2026-06-17T19:09:02.547+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-9] com.aistudyhub.service.ChatService       : Deleted chat session 24 for user 20 with title 'abd'
+2026-06-17T19:09:04.462+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-2] com.aistudyhub.service.ChatService       : Deleted chat session 25 for user 20 with title 'abd from localhost check'
+2026-06-17T19:09:06.129+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-6] com.aistudyhub.service.ChatService       : Deleted chat session 26 for user 20 with title 'nvm'
+2026-06-17T19:09:07.992+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-3] com.aistudyhub.service.ChatService       : Deleted chat session 27 for user 20 with title 'abc'
+2026-06-17T19:09:09.682+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-8] com.aistudyhub.service.ChatService       : Deleted chat session 29 for user 20 with title 'abc'
+2026-06-17T19:09:11.399+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-1] com.aistudyhub.service.ChatService       : Deleted chat session 31 for user 20 with title 'lỗi rồi'
+2026-06-17T19:09:13.737+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-2] com.aistudyhub.service.ChatService       : Deleted chat session 33 for user 20 with title 'Interview trong SWR là gì?'
+2026-06-17T19:09:16.658+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-9] com.aistudyhub.service.ChatService       : Deleted chat session 35 for user 20 with title 'abc'
+2026-06-17T19:10:32.880+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-5] com.aistudyhub.service.ChatService       : Deleted chat session 47 for user 20 with title 'SWR là gì'
+2026-06-17T19:18:26.177+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-4] com.aistudyhub.service.ChatService       : Deleted chat session 48 for user 20 with title 'HỌC ĐI'
+2026-06-17T21:57:39.246+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-9] com.aistudyhub.service.ChatService       : Deleted chat session 50 for user 20 with title '123'
+2026-06-17T21:57:41.880+07:00  INFO 33612 --- [ai-study-hub-java] [nio-8080-exec-8] com.aistudyhub.service.ChatService       : Deleted chat session 49 for user 20 with title 'abcd SWR'

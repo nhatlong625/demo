@@ -1,0 +1,46 @@
+
+> ai-studyhub@0.0.0 dev
+> vite --host 127.0.0.1
+
+
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m410[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://127.0.0.1:[1m5173[22m/[39m
+[2m4:49:04 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m4:52:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m4:52:53 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m4:55:46 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m4:56:06 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m4:56:21 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m4:56:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m4:56:55 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:11:58 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/variables.css, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx[22m
+[2m5:18:35 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:18:50 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m5:19:39 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:25:06 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:27:59 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:29:23 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:39:15 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:39:31 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:39:49 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:43:05 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/variables.css, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx[22m
+[2m5:43:30 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m5:44:59 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:49:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/styles/variables.css, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx[22m
+[2m5:49:43 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m5:52:00 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:54:10 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:54:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:54:50 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:55:04 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m5:56:07 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m6:05:52 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m6:06:48 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\components\student\chat\ChatSidebar.jsx, /src/styles/variables.css[22m
+[2m6:07:45 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AITutorPage.jsx, /src/styles/variables.css[22m
+[2m6:08:26 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m10:18:08 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m10:18:40 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m10:19:58 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m10:20:11 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m
+[2m10:20:51 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/@fs/C:\Users\admin\Downloads\AI_Study_Hub_v.1.0\frontend\src\pages\student\AIChatPage.jsx, /src/styles/variables.css[22m

@@ -6,7 +6,7 @@ from src.api.routes import router as chat_router
 
 app = FastAPI(
     title="AI Study Hub Chat Bot API",
-    description="RAG API: retrieve study context, detect relevant documents, and answer with Gemini.",
+    description="AI generation API: receive study context from Spring Boot and answer with Gemini.",
     version="0.1.0",
 )
 
@@ -25,4 +25,3 @@ app.include_router(document_router, prefix="/api/documents", tags=["Documents"])
 @app.get("/health", tags=["Health"])
 def health_check():
     return {"status": "ok"}
-

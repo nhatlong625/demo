@@ -1,0 +1,5 @@
+Eigenvectors are non-zero vectors that keep their direction after a linear transformation.
+
+Eigenvalues are the scale factors applied to those eigenvectors.
+
+They are useful for understanding matrix transformations, stability, principal components, and systems of linear equations.

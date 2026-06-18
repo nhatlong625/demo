@@ -1,0 +1,5 @@
+Interview is a requirements elicitation technique in Software Requirements.
+
+Analysts talk directly with stakeholders to understand goals, workflows, constraints, exceptions, pain points, and acceptance criteria.
+
+Interviews can be structured, semi-structured, or open-ended. Good interview notes are later refined into clear and testable requirements.

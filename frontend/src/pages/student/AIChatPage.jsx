@@ -1,10 +1,10 @@
-﻿import { useState, useEffect, useRef } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import ChatSidebar from '../../components/student/chat/ChatSidebar';
 import ChatMessage from '../../components/student/chat/ChatMessage';
 import ChatInput from '../../components/student/chat/ChatInput';
 import Modal from '../../components/common/Modal';
-import { chatMock, chatMockByThread, chatThreads } from '../../mocks/chatMock';
+import { askAiChat, deleteAiChatSession, getDefaultAiUserId, listAiChatMessages, listAiChatSessions } from '../../services/aiChatService';
 
 const sourcePreviewMock = {
   'COS SRS.pdf': {
@@ -114,8 +114,59 @@ const sourcePreviewMock = {
     pages: 'Examples 4-6',
     summary: 'Worked examples for finding eigenvalues and eigenvectors from simple matrices.',
     excerpt: 'For a diagonal matrix, the standard basis vectors are eigenvectors and the diagonal entries are their eigenvalues.'
+  },
+  'mock-swr-course-overview.txt': {
+    type: 'TXT',
+    pages: 'Mock test document',
+    summary: 'Overview of Software Requirements concepts for testing AI Chat retrieval.',
+    excerpt: 'SWR covers stakeholders, functional requirements, non-functional requirements, SRS, business rules, and validation.'
+  },
+  'mock-requirements-interview-guide.txt': {
+    type: 'TXT',
+    pages: 'Mock test document',
+    summary: 'Interview guide for requirements elicitation in SWR.',
+    excerpt: 'Interview helps analysts collect stakeholder goals, constraints, exceptions, and acceptance criteria.'
+  },
+  'mock-srs-document-template.txt': {
+    type: 'TXT',
+    pages: 'Mock test document',
+    summary: 'Template-style summary of documents commonly created in SWR.',
+    excerpt: 'Common SWR documents include Vision and Scope, SRS, Business Rules, Use Cases, and Traceability Matrix.'
+  },
+  'mock-linear-algebra-eigenvectors.txt': {
+    type: 'TXT',
+    pages: 'Mock test document',
+    summary: 'Linear Algebra notes for testing non-SWR retrieval.',
+    excerpt: 'Eigenvectors keep direction under a transformation; eigenvalues describe the scale factor.'
   }
 };
+
+const mockHomeDocuments = [
+  {
+    file: 'mock-swr-course-overview.txt',
+    title: 'SWR Course Overview',
+    prompt: 'Introduce SWR',
+    summary: 'SWR covers stakeholders, functional requirements, non-functional requirements, SRS, business rules, and validation.'
+  },
+  {
+    file: 'mock-requirements-interview-guide.txt',
+    title: 'Requirements Interview Guide',
+    prompt: 'What is interview in SWR?',
+    summary: 'Interview helps analysts collect stakeholder goals, constraints, exceptions, and acceptance criteria.'
+  },
+  {
+    file: 'mock-srs-document-template.txt',
+    title: 'SRS Document Template',
+    prompt: 'What documents are created in SWR?',
+    summary: 'Common SWR documents include Vision and Scope, SRS, Business Rules, Use Cases, and Traceability Matrix.'
+  },
+  {
+    file: 'mock-linear-algebra-eigenvectors.txt',
+    title: 'Linear Algebra Eigenvectors Notes',
+    prompt: 'What are eigenvectors?',
+    summary: 'Eigenvectors keep direction under a transformation; eigenvalues describe the scale factor.'
+  }
+];
 
 function getSourcePreview(source) {
   return sourcePreviewMock[source] || {
@@ -132,53 +183,152 @@ function getSourcePreview(source) {
   };
 }
 
-function createMockAiResponse(text) {
-  const normalizedText = text.toLowerCase();
-
-  if (normalizedText.includes('introduce') && normalizedText.includes('swr')) {
-    return {
-      role: 'assistant',
-      content: 'SWR, or Software Requirements, is a subject that teaches how to understand what a software system should do before the development team starts building it.\n\nIn this subject, you typically learn:\n- How to identify stakeholders and understand their needs.\n- How to collect requirements through interviews, questionnaires, observation, and workshops.\n- How to write functional and non-functional requirements clearly.\n- How to prepare documents such as SRS, business rules, vision and scope, and use cases.\n- How to validate requirements so the final system matches user expectations.\n\nWhy it matters:\nSWR helps reduce misunderstandings, prevent costly rework, and make communication clearer between users, clients, analysts, testers, and developers.',
-      sources: ['COS SRS.pdf', 'COS Business Rules.pdf', 'COS Vision and Scope.pdf']
-    };
-  }
-
-  if (normalizedText.includes('interview') && normalizedText.includes('swr')) {
-    return {
-      role: 'assistant',
-      content: 'I found several useful references about Interview as a requirements elicitation technique in SWR (Software Requirements). In this context, an interview is a structured or semi-structured conversation used to collect requirements from stakeholders.\n\nKey meaning:\n- It helps analysts understand real user and business needs.\n- It clarifies vague requirements before they are written into the SRS.\n- It reveals constraints, exceptions, workflows, and pain points.\n- It creates a basis for validating requirements with stakeholders.\n\nRecommended materials:\n1. Software Requirements - Elicitation Techniques\n2. Requirements Engineering Interview Guide\n3. Stakeholder Interview Checklist for SRS',
-      sources: ['Software_Requirements_3rd_Edition.pdf', 'SWR_Elicitation_Techniques.pdf', 'Stakeholder_Interview_Checklist.docx']
-    };
-  }
-
-  return {
-    role: 'assistant',
-    content: `Temporary mock answer\n\nI cannot connect to the real AI chatbot yet because the backend/API integration has not been added.\n\nYour question was: "${text}".\n\nFor now, this mock response can be used to preview the chat experience:\n- The chatbot received your question successfully.\n- A real implementation would send this message to the backend.\n- The backend would call the AI provider and return a generated answer.\n- If document search is enabled, the response would also include matched sources and citations.\n\nOnce the API is connected, this placeholder can be replaced with the real AI answer.`,
-    sources: []
-  };
-}
-
 function createPendingAiMessage(id) {
   return {
     id,
     role: 'assistant',
-    content: 'Äang gá»­i cÃ¢u há»i tá»›i AI...',
+    content: 'Sending your question to AI...',
     sources: [],
     isPending: true
   };
 }
 
+function createLoadingHistoryMessage(sessionId) {
+  return {
+    id: `loading-history-${sessionId}`,
+    role: 'assistant',
+    content: 'Loading saved chat history...',
+    sources: [],
+    isPending: true
+  };
+}
+
+function createEmptyHistoryMessage(sessionId) {
+  return {
+    id: `empty-history-${sessionId}`,
+    role: 'assistant',
+    content: 'This chat exists in the backend, but it has no saved messages yet.',
+    sources: [],
+    isError: true
+  };
+}
+
+
+function getBackendSessionId(response) {
+  return response?.sessionId ?? response?.session_id ?? null;
+}
+
+function getBackendSources(response) {
+  return (response?.sources || [])
+    .map(source => source.documentName || source.document_name || source.title)
+    .filter(Boolean);
+}
+
+function createBackendAiMessage(id, response) {
+  return {
+    id,
+    role: 'assistant',
+    content: response?.answer || 'AI service did not return an answer.',
+    sources: getBackendSources(response),
+    backendSources: response?.sources || [],
+    usedMockAi: response?.usedMockAi ?? response?.used_mock_ai ?? false
+  };
+}
+
+function tokenizeText(text) {
+  return String(text || '').toLowerCase().match(/[a-z0-9_]+/g) || [];
+}
+
+function scoreMockDocument(question, doc) {
+  const queryTerms = new Set(tokenizeText(question));
+  const haystackTerms = new Set(tokenizeText(`${doc.file} ${doc.title} ${doc.summary}`));
+  if (queryTerms.size === 0) return 0;
+  let overlap = 0;
+  queryTerms.forEach(term => {
+    if (haystackTerms.has(term)) overlap += 1;
+  });
+  return overlap / queryTerms.size;
+}
+
+function createLocalMockResponse(question) {
+  const rankedDocs = [...mockHomeDocuments]
+    .map(doc => ({ ...doc, score: scoreMockDocument(question, doc) }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3);
+  const bestDoc = rankedDocs[0] || mockHomeDocuments[0];
+
+  return {
+    answer: [
+      'Mock mode is active because the backend AI service is not reachable.',
+      '',
+      `Based on ${bestDoc.file}: ${bestDoc.summary}`,
+      '',
+      'Related mock documents:',
+      ...rankedDocs.map(doc => `- ${doc.file}`)
+    ].join('\n'),
+    sources: rankedDocs.map(doc => ({
+      documentName: doc.file,
+      document_name: doc.file,
+      title: doc.title,
+      score: doc.score,
+      summary_preview: doc.summary
+    })),
+    usedMockAi: true,
+    used_mock_ai: true
+  };
+}
+
+function createErrorAiMessage(id, error) {
+  const rawMessage = error?.message || '';
+  const shouldHideRawMessage = rawMessage.includes('Python AI service request failed')
+    || rawMessage.includes('422 Unprocessable Entity')
+    || rawMessage.includes('"loc":["body"]');
+
+  return {
+    id,
+    role: 'assistant',
+    content: shouldHideRawMessage
+      ? 'Cannot reach AI service right now. Please refresh the page and try again.'
+      : `Cannot reach AI service right now.\n\n${rawMessage || 'Please make sure Spring Boot, Python AI service, and SQL Server are running.'}`,
+    sources: [],
+    isError: true
+  };
+}
+
+function mapBackendSessionToThread(session) {
+  const id = session?.sessionId ?? session?.session_id;
+  const title = session?.sessionTitle ?? session?.session_title ?? 'New AI Chat';
+
+  return {
+    id,
+    title,
+    topic: 'Saved chat',
+    updatedAt: session?.updatedAt || session?.updated_at || session?.createdAt || session?.created_at || ''
+  };
+}
+
+function mapBackendMessageToMessage(message) {
+  return {
+    id: message?.messageId ?? message?.message_id ?? `${message?.session_id || 'session'}-${message?.created_at || Date.now()}`,
+    role: message?.role || 'assistant',
+    content: message?.content || '',
+    sources: []
+  };
+}
+
 function AiChatPage() {
-  const { chatId } = useParams();
+  const params = useParams();
+  const chatId = params.chatId || params.threadId;
   const location = useLocation();
+  const navigate = useNavigate();
   const initialMessage = !chatId ? location.state?.initialMessage : null;
   const initialCourses = !chatId ? location.state?.selectedCourses || [] : [];
   const initialMessageIdRef = useRef(Date.now());
-  const initialResponseHandledRef = useRef(false);
-  const localThreadIdRef = useRef(`mock-current-chat-${Date.now()}`);
+  const handledInitialMessageKeyRef = useRef(null);
   const localThreadMessagesRef = useRef(null);
+  const historyLoadRequestIdRef = useRef(0);
+  const chatRequestIdRef = useRef(0);
   const [messages, setMessages] = useState(() => {
-    if (chatId) return chatMockByThread[chatId] || [];
     if (initialMessage) {
       return [{
         id: initialMessageIdRef.current,
@@ -188,77 +338,152 @@ function AiChatPage() {
     }
     return [];
   });
-  const [localThreads, setLocalThreads] = useState(chatThreads);
+  const [localThreads, setLocalThreads] = useState([]);
+  const [activeSessionId, setActiveSessionId] = useState(() => {
+    const numericChatId = Number(chatId);
+    return Number.isFinite(numericChatId) && numericChatId > 0 ? numericChatId : null;
+  });
+  const [recentError, setRecentError] = useState('');
   const [selectedCourses, setSelectedCourses] = useState(initialCourses);
   const [highlightedMessageId, setHighlightedMessageId] = useState(null);
   const [selectedSource, setSelectedSource] = useState(null);
-  const hasUserQuestion = messages.some(message => message.role === 'user');
+  const refreshRecentThreads = useCallback(() => {
+    listAiChatSessions(getDefaultAiUserId())
+      .then(sessions => {
+        setRecentError('');
+        if (Array.isArray(sessions)) {
+          setLocalThreads(sessions.map(mapBackendSessionToThread).filter(thread => thread.id));
+        }
+      })
+      .catch(error => {
+        setRecentError(error?.message || 'Cannot load recent chats from backend.');
+      });
+  }, []);
+
+  const loadSessionMessages = useCallback((sessionId) => {
+    const numericSessionId = Number(sessionId);
+    if (!Number.isFinite(numericSessionId) || numericSessionId <= 0) return;
+
+    const requestId = historyLoadRequestIdRef.current + 1;
+    historyLoadRequestIdRef.current = requestId;
+
+    window.scrollTo({ top: 0, left: 0 });
+    setActiveSessionId(numericSessionId);
+    setSelectedCourses([]);
+    setHighlightedMessageId(null);
+    setSelectedSource(null);
+    setMessages([createLoadingHistoryMessage(numericSessionId)]);
+
+    listAiChatMessages(numericSessionId, getDefaultAiUserId())
+      .then(history => {
+        if (historyLoadRequestIdRef.current !== requestId) return;
+
+        const nextMessages = (Array.isArray(history) ? history : [])
+          .map(mapBackendMessageToMessage)
+          .filter(message => message.content.trim());
+
+        setMessages(nextMessages.length > 0 ? nextMessages : [createEmptyHistoryMessage(numericSessionId)]);
+        localThreadMessagesRef.current = nextMessages;
+      })
+      .catch(error => {
+        if (historyLoadRequestIdRef.current !== requestId) return;
+
+        setMessages([{
+          id: `load-error-${numericSessionId}`,
+          role: 'assistant',
+          content: `Could not load this chat history from backend.\n\n${error?.message || 'Please try again.'}`,
+          sources: [],
+          isError: true
+        }]);
+      });
+  }, []);
+
+  const startInitialChat = useCallback((text, courses, messageKey) => {
+    const cleanText = String(text || '').trim();
+    if (!cleanText || handledInitialMessageKeyRef.current === messageKey) return;
+
+    handledInitialMessageKeyRef.current = messageKey;
+    historyLoadRequestIdRef.current += 1;
+    const requestId = chatRequestIdRef.current + 1;
+    chatRequestIdRef.current = requestId;
+
+    const userMessageId = Date.now();
+    const pendingResponseId = userMessageId + 1;
+    const userMessage = {
+      id: userMessageId,
+      role: 'user',
+      content: cleanText
+    };
+    const pendingResponse = createPendingAiMessage(pendingResponseId);
+    const nextMessages = [userMessage, pendingResponse];
+
+    window.scrollTo({ top: 0, left: 0 });
+    setActiveSessionId(null);
+    setSelectedCourses(courses || []);
+    setHighlightedMessageId(null);
+    setSelectedSource(null);
+    setMessages(nextMessages);
+    localThreadMessagesRef.current = nextMessages;
+
+    askAiChat({
+      userId: getDefaultAiUserId(),
+      sessionId: null,
+      message: cleanText,
+      topK: 3
+    })
+      .then(response => {
+        if (chatRequestIdRef.current !== requestId) return;
+
+        const backendSessionId = getBackendSessionId(response);
+        if (backendSessionId) setActiveSessionId(backendSessionId);
+        refreshRecentThreads();
+        const aiResponse = createBackendAiMessage(pendingResponseId, response);
+        setMessages(prev => {
+          const updatedMessages = prev.map(message => (
+            message.id === pendingResponseId ? aiResponse : message
+          ));
+          localThreadMessagesRef.current = updatedMessages;
+          return updatedMessages;
+        });
+      })
+      .catch(() => {
+        if (chatRequestIdRef.current !== requestId) return;
+
+        const aiResponse = createBackendAiMessage(pendingResponseId, createLocalMockResponse(cleanText));
+        setMessages(prev => {
+          const updatedMessages = prev.map(message => (
+            message.id === pendingResponseId ? aiResponse : message
+          ));
+          localThreadMessagesRef.current = updatedMessages;
+          return updatedMessages;
+        });
+      });
+  }, [refreshRecentThreads]);
 
   useEffect(() => {
-    if (chatId) {
-      setMessages(chatMockByThread[chatId] || localThreadMessagesRef.current || []);
-      setSelectedCourses([]);
+    refreshRecentThreads();
+  }, [refreshRecentThreads]);
+
+  useEffect(() => {
+    if (!chatId && !initialMessage) {
+      navigate('/student/ai-tutor', { replace: true });
+    }
+  }, [chatId, initialMessage, navigate]);
+
+  useEffect(() => {
+    const numericChatId = Number(chatId);
+    const nextSessionId = Number.isFinite(numericChatId) && numericChatId > 0 ? numericChatId : null;
+
+    if (nextSessionId) {
+      loadSessionMessages(nextSessionId);
     } else if (initialMessage) {
-      setMessages([{
-        id: initialMessageIdRef.current,
-        role: 'user',
-        content: initialMessage
-      }]);
-      setSelectedCourses(initialCourses);
+      startInitialChat(initialMessage, initialCourses, `${location.key || 'initial'}:${initialMessage}`);
     } else {
+      setActiveSessionId(null);
       setMessages([]);
     }
     setHighlightedMessageId(null);
-  }, [chatId, initialMessage]);
-
-  useEffect(() => {
-    if (chatId || !initialMessage || initialResponseHandledRef.current) return undefined;
-
-    initialResponseHandledRef.current = true;
-    localThreadMessagesRef.current = [{
-      id: initialMessageIdRef.current,
-      role: 'user',
-      content: initialMessage
-    }];
-    setLocalThreads(prev => {
-      if (prev.some(thread => thread.id === localThreadIdRef.current)) return prev;
-
-      return [
-        {
-          id: localThreadIdRef.current,
-          title: initialMessage.length > 28 ? `${initialMessage.slice(0, 28)}...` : initialMessage,
-          topic: 'Current mock chat',
-          updatedAt: 'Just now'
-        },
-        ...prev
-      ];
-    });
-
-    const pendingResponseId = initialMessageIdRef.current + 1;
-    const pendingResponse = createPendingAiMessage(pendingResponseId);
-    setMessages(prev => {
-      const hasInitialResponse = prev.some(message => message.id === pendingResponseId);
-      const nextMessages = hasInitialResponse ? prev : [...prev, pendingResponse];
-      localThreadMessagesRef.current = nextMessages;
-      return nextMessages;
-    });
-
-    setTimeout(() => {
-      const aiResponse = {
-        id: pendingResponseId,
-        ...createMockAiResponse(initialMessage)
-      };
-      setMessages(prev => {
-        const nextMessages = prev.map(message => (
-          message.id === pendingResponseId ? aiResponse : message
-        ));
-        localThreadMessagesRef.current = nextMessages;
-        return nextMessages;
-      });
-    }, 700);
-
-    return undefined;
-  }, [chatId, initialMessage]);
+  }, [chatId, initialMessage, loadSessionMessages, location.key, startInitialChat]);
 
   const citedSources = messages.reduce((acc, msg) => {
     if (msg.sources && msg.sources.length > 0) {
@@ -306,33 +531,36 @@ function AiChatPage() {
       localThreadMessagesRef.current = nextMessages;
       return nextMessages;
     });
-    setLocalThreads(prev => {
-      if (chatId || prev.some(thread => thread.id === localThreadIdRef.current)) return prev;
 
-      return [
-        {
-          id: localThreadIdRef.current,
-          title: text.length > 28 ? `${text.slice(0, 28)}...` : text,
-          topic: 'Current mock chat',
-          updatedAt: 'Just now'
-        },
-        ...prev
-      ];
-    });
-
-    setTimeout(() => {
-      const aiResponse = {
-        id: pendingResponseId,
-        ...createMockAiResponse(text)
-      };
-      setMessages(prev => {
-        const nextMessages = prev.map(message => (
-          message.id === pendingResponseId ? aiResponse : message
-        ));
-        localThreadMessagesRef.current = nextMessages;
-        return nextMessages;
+    askAiChat({
+      userId: getDefaultAiUserId(),
+      sessionId: activeSessionId,
+      message: text,
+      topK: 3
+    })
+      .then(response => {
+        const backendSessionId = getBackendSessionId(response);
+        if (backendSessionId) setActiveSessionId(backendSessionId);
+        refreshRecentThreads();
+        const aiResponse = createBackendAiMessage(pendingResponseId, response);
+        setMessages(prev => {
+          const nextMessages = prev.map(message => (
+            message.id === pendingResponseId ? aiResponse : message
+          ));
+          localThreadMessagesRef.current = nextMessages;
+          return nextMessages;
+        });
+      })
+      .catch(error => {
+        const aiResponse = createBackendAiMessage(pendingResponseId, createLocalMockResponse(text));
+        setMessages(prev => {
+          const nextMessages = prev.map(message => (
+            message.id === pendingResponseId ? aiResponse : message
+          ));
+          localThreadMessagesRef.current = nextMessages;
+          return nextMessages;
+        });
       });
-    }, 1000);
   };
 
   const handleAddCourse = (course) => {
@@ -345,12 +573,60 @@ function AiChatPage() {
     setSelectedCourses(prev => prev.filter(course => course.code !== courseCode));
   };
 
+  const handleNewChat = () => {
+    window.scrollTo({ top: 0, left: 0 });
+    localThreadMessagesRef.current = null;
+    handledInitialMessageKeyRef.current = null;
+    chatRequestIdRef.current += 1;
+    historyLoadRequestIdRef.current += 1;
+    setMessages([]);
+    setActiveSessionId(null);
+    setSelectedCourses([]);
+    setHighlightedMessageId(null);
+    setSelectedSource(null);
+    refreshRecentThreads();
+  };
+
+  const handleThreadSelect = useCallback((thread) => {
+    if (!thread?.id) return;
+    loadSessionMessages(thread.id);
+  }, [loadSessionMessages]);
+
+  const handleDeleteThread = useCallback((thread) => {
+    if (!thread?.id) return;
+    const confirmed = window.confirm(`Delete chat history "${thread.title}"?`);
+    if (!confirmed) return;
+
+    deleteAiChatSession({ ...thread, userId: getDefaultAiUserId() })
+      .then(() => {
+        refreshRecentThreads();
+        const deletedSessionId = Number(thread.id);
+        const currentSessionId = Number(activeSessionId ?? chatId);
+        if (Number.isFinite(deletedSessionId) && deletedSessionId === currentSessionId) {
+          localThreadMessagesRef.current = null;
+          setMessages([]);
+          setActiveSessionId(null);
+          setSelectedCourses([]);
+          setHighlightedMessageId(null);
+          setSelectedSource(null);
+          navigate('/student/ai-tutor', { replace: true });
+        }
+      })
+      .catch(error => {
+        window.alert(error?.message || 'Could not delete this chat history.');
+      });
+  }, [activeSessionId, chatId, navigate, refreshRecentThreads]);
+
   return (
     <div style={{ display: 'flex', height: 'calc(100vh - 78px)', width: '100%', minWidth: 0, overflow: 'hidden', background: '#fafafa' }}>
       <ChatSidebar
         threads={localThreads}
         citedSources={citedSources}
         onSourceClick={handleSourceClick}
+        onNewChat={handleNewChat}
+        onThreadSelect={handleThreadSelect}
+        onDeleteThread={handleDeleteThread}
+        recentError={recentError}
         variant={courseFolder ? 'newChat' : 'sources'}
         showCourseFolders={Boolean(courseFolder)}
         courseFolder={courseFolder}
@@ -426,7 +702,12 @@ function AiChatPage() {
                   <h2 style={{ margin: '0 0 16px', color: '#111827', fontSize: '1.35rem', lineHeight: 1.25 }}>
                     {selectedSource.replace(/\.[^/.]+$/, '')}
                   </h2>
-                  {getSourcePreview(selectedSource).sections.map((section) => (
+                  {(getSourcePreview(selectedSource).sections || [
+                    {
+                      heading: 'Preview',
+                      body: getSourcePreview(selectedSource).excerpt || getSourcePreview(selectedSource).summary
+                    }
+                  ]).map((section) => (
                     <section key={section.heading} style={{ marginTop: '20px' }}>
                       <h3 style={{ margin: '0 0 8px', color: '#1f2937', fontSize: '1rem' }}>
                         {section.heading}
@@ -447,4 +728,3 @@ function AiChatPage() {
 }
 
 export default AiChatPage;
-

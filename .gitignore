@@ -1,16 +1,31 @@
-﻿node_modules/
-dist/
-build/
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Python
+backend-python/.venv/
+backend-python/__pycache__/
+backend-python/**/__pycache__/
+backend-python/*.py[cod]
+backend-python/.pytest_cache/
+
+# Build outputs
+backend-java/logs/
+backend-java/target/
 legacy-build/
+dist/
 
+# Environment / secrets
 .env
-.env.local
+*.env
+!.env.example
+backend-python/.env
+backend-java/.env
+frontend/.env
 
-target/
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-.idea/
+# OS / editor
+.DS_Store
+Thumbs.db
 .vscode/
+.idea/

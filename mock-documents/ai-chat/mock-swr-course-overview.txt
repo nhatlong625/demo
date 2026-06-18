@@ -1,0 +1,5 @@
+Software Requirements (SWR) teaches students how to discover, analyze, document, and validate what a software system must do.
+
+Important concepts include stakeholders, functional requirements, non-functional requirements, business rules, scope, Software Requirements Specification (SRS), traceability, and validation.
+
+SWR helps reduce misunderstanding before implementation begins.
