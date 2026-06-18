@@ -1,25 +1,35 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import logoImg from '../../assets/images/logo.png';
+import authService from '../../services/authService';
 
 function ForgotPasswordPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const isResetStep = searchParams.get('step') === 'reset';
-  const emailParam = searchParams.get('email') || '';
+  const resetToken = searchParams.get('token') || '';
+  const isResetStep = !!resetToken;
 
-  const [email, setEmail] = useState(emailParam);
+  // Step 1: Enter email
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [emailSuccess, setEmailSuccess] = useState('');
+  const [sending, setSending] = useState(false);
+
+  // Step 2: Reset password
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [resetSuccess, setResetSuccess] = useState('');
+  const [resetting, setResetting] = useState(false);
 
-  // Step 1: Request Password Reset Code
-  const handleSendEmail = (e) => {
+  // ===== STEP 1: Send reset email =====
+  const handleSendEmail = async (e) => {
     e.preventDefault();
+    setEmailError('');
+    setEmailSuccess('');
+
     if (!email) {
       setEmailError('Email is required');
       return;
@@ -28,37 +38,55 @@ function ForgotPasswordPage() {
       setEmailError('Please enter a valid email address');
       return;
     }
-    setEmailError('');
-    
-    // Navigate to Verify Email page with the email in query parameters
-    navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+
+    setSending(true);
+    try {
+      const data = await authService.forgotPassword({ email });
+      setEmailSuccess(data.message || 'If the email exists, a reset link has been sent.');
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Something went wrong.';
+      setEmailError(msg);
+    } finally {
+      setSending(false);
+    }
   };
 
-  // Step 3: Reset Password
-  const handleResetPassword = (e) => {
+  // ===== STEP 2: Reset password =====
+  const handleResetPassword = async (e) => {
     e.preventDefault();
+    setPasswordError('');
+    setResetSuccess('');
+
     if (!newPassword) {
       setPasswordError('Password is required');
       return;
     }
-    if (newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters');
+    if (newPassword.length < 6) {
+      setPasswordError('Password must be at least 6 characters');
       return;
     }
     if (newPassword !== confirmPassword) {
       setPasswordError('Passwords do not match');
       return;
     }
-    setPasswordError('');
-    
-    alert('Your password has been reset successfully!');
-    navigate('/login');
+
+    setResetting(true);
+    try {
+      const data = await authService.resetPassword({ token: resetToken, newPassword });
+      setResetSuccess(data.message || 'Password reset successfully!');
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Reset failed. The link may have expired.';
+      setPasswordError(msg);
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
     <div className="auth-shell">
       {!isResetStep ? (
-        /* Step 1: Enter Email */
+        /* ===== STEP 1: Enter Email ===== */
         <div className="login-modal-card">
           {/* Logo */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
@@ -83,9 +111,39 @@ function ForgotPasswordPage() {
             <span className="login-modal-secure-label" style={{ letterSpacing: '0.12em' }}>SECURITY</span>
             <h2 className="login-modal-title" style={{ fontSize: '1.65rem' }}>Forgot Password?</h2>
             <p className="login-modal-subtitle" style={{ fontSize: '0.88rem', padding: '0 10px', lineHeight: '1.5' }}>
-              Enter your email address and we'll send you a code to reset your password.
+              Enter your email and we'll send you a reset link.
             </p>
           </div>
+
+          {/* Success */}
+          {emailSuccess && (
+            <div style={{
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              color: '#16a34a',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              marginBottom: '16px',
+            }}>
+              {emailSuccess}
+            </div>
+          )}
+
+          {/* Error */}
+          {emailError && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: 'var(--color-error)',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              marginBottom: '16px',
+            }}>
+              {emailError}
+            </div>
+          )}
 
           {/* Form */}
           <form className="login-modal-form" onSubmit={handleSendEmail}>
@@ -99,23 +157,20 @@ function ForgotPasswordPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="email"
               />
-              {emailError && (
-                <p style={{ color: 'var(--color-error)', fontSize: '0.8rem', margin: '4px 0 0' }}>
-                  {emailError}
-                </p>
-              )}
             </div>
 
-            <button type="submit" className="login-modal-submit" style={{ marginTop: '8px' }}>
-              Send
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
+            <button type="submit" className="login-modal-submit" style={{ marginTop: '8px' }} disabled={sending}>
+              {sending ? 'Sending...' : 'Send Reset Link'}
+              {!sending && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              )}
             </button>
           </form>
 
-          {/* Back to Login Footer */}
+          {/* Back to Login */}
           <Link to="/login" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', color: 'var(--color-primary)', fontWeight: 700, fontSize: '0.88rem', marginTop: '24px', transition: 'opacity 0.15s' }} className="hover-opacity-80">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '8px' }}>
               <line x1="19" y1="12" x2="5" y2="12"/>
@@ -125,12 +180,9 @@ function ForgotPasswordPage() {
           </Link>
         </div>
       ) : (
-        /* Step 3: Reset Password */
+        /* ===== STEP 2: Reset Password ===== */
         <div className="login-modal-card" style={{ borderTop: '1px solid rgba(124, 58, 237, 0.08)' }}>
-          {/* Override top border to remove shimmer bar */}
-          <style>{`
-            .login-modal-card::before { display: none !important; }
-          `}</style>
+          <style>{`.login-modal-card::before { display: none !important; }`}</style>
 
           {/* Logo */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
@@ -154,9 +206,40 @@ function ForgotPasswordPage() {
           <div className="login-modal-header" style={{ marginBottom: '24px', marginTop: '10px' }}>
             <h2 className="login-modal-title" style={{ fontSize: '1.8rem', fontWeight: 800 }}>Reset Password</h2>
             <p className="login-modal-subtitle" style={{ fontSize: '0.9rem', lineHeight: '1.5', color: 'var(--color-text-soft)' }}>
-              Set your new password below to regain access to your account.
+              Set your new password below.
             </p>
           </div>
+
+          {/* Success */}
+          {resetSuccess && (
+            <div style={{
+              background: 'rgba(34, 197, 94, 0.1)',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              color: '#16a34a',
+              padding: '12px 16px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              marginBottom: '16px',
+              textAlign: 'center',
+            }}>
+              {resetSuccess} Redirecting...
+            </div>
+          )}
+
+          {/* Error */}
+          {passwordError && (
+            <div style={{
+              background: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: 'var(--color-error)',
+              padding: '10px 16px',
+              borderRadius: '8px',
+              fontSize: '0.85rem',
+              marginBottom: '16px',
+            }}>
+              {passwordError}
+            </div>
+          )}
 
           {/* Form */}
           <form className="login-modal-form" onSubmit={handleResetPassword}>
@@ -226,19 +309,16 @@ function ForgotPasswordPage() {
                   )}
                 </button>
               </div>
-              {passwordError && (
-                <p style={{ color: 'var(--color-error)', fontSize: '0.8rem', margin: '4px 0 0' }}>
-                  {passwordError}
-                </p>
-              )}
             </div>
 
-            <button type="submit" className="login-modal-submit" style={{ marginTop: '8px', background: 'var(--color-primary)' }}>
-              Reset Password
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"/>
-                <polyline points="12 5 19 12 12 19"/>
-              </svg>
+            <button type="submit" className="login-modal-submit" style={{ marginTop: '8px', background: 'var(--color-primary)' }} disabled={resetting}>
+              {resetting ? 'Resetting...' : 'Reset Password'}
+              {!resetting && (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              )}
             </button>
           </form>
 

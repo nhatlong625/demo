@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import Button from '../../components/common/Button';
+import Button from '../../components/common/common/Button';
 import desktopMockup from '../../assets/landingImages/desktop_mockup.png';
 import studentsIllustration from '../../assets/landingImages/students_illustration.png'
 import '../../styles/landing.css';
